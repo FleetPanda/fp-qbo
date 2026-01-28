@@ -18,8 +18,8 @@ require_relative "fp_qbo/connection/pool"
 require_relative "fp_qbo/client"
 
 # Optional: Resource abstractions
-require_relative "fp_qbo/resources/base"
-require_relative "fp_qbo/resources/customer"
+# require_relative "fp_qbo/resources/base"
+# require_relative "fp_qbo/resources/customer"
 
 # Standard library requirements
 require "net/http"
