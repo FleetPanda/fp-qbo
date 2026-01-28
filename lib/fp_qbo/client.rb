@@ -31,17 +31,17 @@ module FpQbo
 
     # Core CRUD operations
 
-    def query(entity:, conditions: nil, select: "*", limit: 100, offset: 0)
+    def query(entity:, conditions: nil, select: "*", limit: 100, offset: 0, params: {})
       ensure_valid_token!
-
       query_string = build_query_string(entity, conditions, select, limit, offset)
+
+      query_params = { query: query_string }.merge(params)
 
       request = @request_builder.build(
         method: :get,
         endpoint: "query",
-        query: { query: query_string }
+        query: query_params
       )
-
       execute_request(request)
     end
 
