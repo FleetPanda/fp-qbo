@@ -2,6 +2,7 @@
 
 module FpQbo
   module Retry
+    # Implements a retry strategy with exponential backoff for network and API errors.
     class Strategy
       DEFAULT_RETRYABLE_ERRORS = [
         Timeout::Error,
@@ -13,6 +14,12 @@ module FpQbo
         ServiceUnavailableError
       ].freeze
 
+      # Initializes a new retry strategy.
+      #
+      # @param max_attempts [Integer] Maximum number of retry attempts.
+      # @param base_delay [Numeric] Base delay in seconds for backoff.
+      # @param max_delay [Numeric] Maximum delay in seconds.
+      # @param retryable_errors [Array<Class>] Errors that should trigger a retry.
       def initialize(max_attempts: 3, base_delay: 1, max_delay: 32, retryable_errors: DEFAULT_RETRYABLE_ERRORS)
         @max_attempts = max_attempts
         @base_delay = base_delay
@@ -21,6 +28,11 @@ module FpQbo
         @logger = FpQbo.logger
       end
 
+      # Executes the given block with retry logic for retryable errors.
+      #
+      # @yield The block to execute with retries.
+      # @return [Object] The result of the block if successful.
+      # @raise [Exception] The last error if retries are exhausted.
       def execute
         attempt = 0
 
@@ -40,12 +52,22 @@ module FpQbo
         end
       end
 
+      # Class-level helper to execute a block with retry logic.
+      #
+      # @param max_attempts [Integer] Maximum number of retry attempts.
+      # @param base_delay [Numeric] Base delay in seconds for backoff.
+      # @yield The block to execute with retries.
+      # @return [Object] The result of the block if successful.
       def self.with_retry(max_attempts: 3, base_delay: 1, &block)
         new(max_attempts: max_attempts, base_delay: base_delay).execute(&block)
       end
 
       private
 
+      # Calculates the exponential backoff delay for the given attempt.
+      #
+      # @param attempt [Integer] The current attempt number.
+      # @return [Numeric] The delay in seconds.
       def calculate_delay(attempt)
         delay = @base_delay * (2**(attempt - 1))
         [delay, @max_delay].min

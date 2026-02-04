@@ -3,6 +3,8 @@
 require "logger"
 
 module FpQbo
+  # Configuration for the fp_qbo gem, including API credentials, environment, timeouts, and logging.
+  # Provides accessors for all configurable options and environment helpers.
   class Configuration
     attr_accessor :client_id, :client_secret, :environment, :base_url, :oauth_base_url, :timeout, :open_timeout,
                   :read_timeout, :retry_count, :retry_delay, :max_retry_delay, :rate_limit_enabled, :rate_limit_per_minute, :logger, :log_level, :pool_size, :pool_timeout, :auto_refresh_token, :validate_ssl
@@ -14,6 +16,7 @@ module FpQbo
 
     OAUTH_BASE_URL = "https://oauth.platform.intuit.com"
 
+    # Initializes a new Configuration object with default values.
     def initialize
       @client_id = nil
       @client_secret = nil
@@ -43,6 +46,10 @@ module FpQbo
       @validate_ssl = true
     end
 
+    # Sets the environment and updates the base_url accordingly.
+    #
+    # @param env [Symbol, String] The environment (:production or :sandbox).
+    # @raise [ConfigurationError] If the environment is invalid.
     def environment=(env)
       env = env.to_sym
       unless ENVIRONMENTS.key?(env)
@@ -53,10 +60,16 @@ module FpQbo
       @base_url = ENVIRONMENTS[env]
     end
 
+    # Checks if the environment is production.
+    #
+    # @return [Boolean] True if production, false otherwise.
     def production?
       environment == :production
     end
 
+    # Checks if the environment is sandbox.
+    #
+    # @return [Boolean] True if sandbox, false otherwise.
     def sandbox?
       environment == :sandbox
     end

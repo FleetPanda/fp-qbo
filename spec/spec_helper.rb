@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "rspec"
 require "fp_qbo"
 
 RSpec.configure do |config|

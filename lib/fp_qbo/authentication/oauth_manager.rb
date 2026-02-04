@@ -4,23 +4,39 @@ require_relative "token"
 
 module FpQbo
   module Authentication
+    # Manages OAuth2 tokens for QuickBooks Online, including validation and refresh logic.
+    # Provides methods to check token validity, refresh tokens, and build authorization headers.
     class OAuthManager
       attr_reader :token
 
+      # Initializes a new OAuthManager.
+      #
+      # @param token [FpQbo::Authentication::Token] The token to manage.
       def initialize(token)
         @token = token
         @config = FpQbo.configuration
         @logger = FpQbo.logger
       end
 
+      # Checks if the managed token is valid.
+      #
+      # @return [Boolean] True if the token is valid, false otherwise.
       def valid?
         token.valid?
       end
 
+      # Checks if the token needs to be refreshed (expired or expiring soon).
+      #
+      # @return [Boolean] True if refresh is needed, false otherwise.
       def refresh_needed?
         token.expired? || token.expires_soon?
       end
 
+      # Refreshes the OAuth token using the refresh token.
+      #
+      # @return [FpQbo::Authentication::Token] The new token object.
+      # @raise [AuthenticationError] If no refresh token is available.
+      # @raise [RefreshTokenError] If the refresh fails.
       def refresh!
         raise AuthenticationError, "No refresh token available" if token.refresh_token.nil?
 
@@ -39,12 +55,18 @@ module FpQbo
         raise RefreshTokenError, "Failed to refresh token: #{e.message}"
       end
 
+      # Returns the HTTP Authorization header for the managed token.
+      #
+      # @return [String] The Authorization header value.
       def authorization_header
         token.authorization_header
       end
 
       private
 
+      # Performs the HTTP request to refresh the token.
+      #
+      # @return [Net::HTTPResponse] The HTTP response from the token endpoint.
       def perform_refresh_request
         uri = URI("#{@config.oauth_base_url}/oauth2/v1/tokens/bearer")
 

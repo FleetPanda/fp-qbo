@@ -6,3 +6,21 @@ Style/StringLiterals:
 
 Style/StringLiteralsInInterpolation:
   EnforcedStyle: double_quotes
+
+Metrics/AbcSize:
+  Max: 30
+
+Metrics/MethodLength:
+  Max: 30
+
+Style/RedundantInterpolation:
+  Enabled: false
+
+Style/NumericPredicate:
+  Enabled: false
+
+Layout/LineLength:
+  Enabled: false
+
+Naming/PredicatePrefix:
+  Enabled: false

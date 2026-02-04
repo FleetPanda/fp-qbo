@@ -5,11 +5,20 @@ require_relative "error_response"
 
 module FpQbo
   module Response
+    # Handles HTTP responses from the QuickBooks Online API, building success or error response objects.
     class Handler
+      # Initializes a new Handler.
+      #
+      # @param logger [Logger] The logger instance.
       def initialize(logger: FpQbo.logger)
         @logger = logger
       end
 
+      # Handles an HTTP response, returning a SuccessResponse or ErrorResponse.
+      #
+      # @param http_response [Net::HTTPResponse] The HTTP response.
+      # @param request [FpQbo::Request::Request] The originating request.
+      # @return [SuccessResponse, ErrorResponse] The wrapped response object.
       def handle(http_response, request)
         @logger.debug("Handling response", status: http_response.code, request: request.to_h)
 
@@ -22,10 +31,19 @@ module FpQbo
 
       private
 
+      # Checks if the HTTP response is a success (2xx).
+      #
+      # @param http_response [Net::HTTPResponse] The HTTP response.
+      # @return [Boolean] True if success, false otherwise.
       def success?(http_response)
         http_response.code.to_i >= 200 && http_response.code.to_i < 300
       end
 
+      # Builds a SuccessResponse from the HTTP response and request.
+      #
+      # @param http_response [Net::HTTPResponse] The HTTP response.
+      # @param request [FpQbo::Request::Request] The originating request.
+      # @return [SuccessResponse]
       def build_success_response(http_response, request)
         data = parse_json(http_response.body)
 
@@ -37,6 +55,11 @@ module FpQbo
         )
       end
 
+      # Builds an ErrorResponse from the HTTP response and request.
+      #
+      # @param http_response [Net::HTTPResponse] The HTTP response.
+      # @param request [FpQbo::Request::Request] The originating request.
+      # @return [ErrorResponse]
       def build_error_response(http_response, request)
         data = parse_json(http_response.body)
 
@@ -48,6 +71,10 @@ module FpQbo
         )
       end
 
+      # Parses a JSON response body, returning a hash or error info.
+      #
+      # @param body [String, nil] The response body.
+      # @return [Hash] The parsed JSON or error info.
       def parse_json(body)
         return {} if body.nil? || body.empty?
 
