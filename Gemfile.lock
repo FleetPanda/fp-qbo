@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    fp_qbo (0.1.13)
+    fp_qbo (0.2.2)
 
 GEM
   remote: https://rubygems.org/

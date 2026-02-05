@@ -239,9 +239,7 @@ module FpQbo
     def ensure_valid_token!
       return if @oauth_manager.valid?
 
-      unless @config.auto_refresh_token && @oauth_manager.token.refresh_token
-        raise TokenExpiredError, "Access token has expired"
-      end
+      raise TokenExpiredError, "Access token has expired" unless @config.auto_refresh_token && @oauth_manager.token.refresh_token
 
       @logger.info("Token invalid, attempting auto-refresh", realm_id: realm_id)
       @oauth_manager.refresh!
